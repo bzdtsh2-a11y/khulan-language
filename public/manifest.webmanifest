@@ -1,0 +1,19 @@
+{
+  "name": "Хулан · Гадаад хэлний ухаалаг туслах",
+  "short_name": "Хулан",
+  "description": "Англи, Солонгос хэлний дүрэм, үг цээжлэх, шалгалтын апп",
+  "id": "/",
+  "start_url": "/?release=14",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "background_color": "#fbf8f9",
+  "theme_color": "#c93f69",
+  "orientation": "portrait-primary",
+  "lang": "mn",
+  "categories": ["education", "productivity", "music", "books"],
+  "icons": [
+    { "src":"/app-icon-192.png", "sizes":"192x192", "type":"image/png", "purpose":"any" },
+    { "src":"/app-icon-512.png", "sizes":"512x512", "type":"image/png", "purpose":"any" }
+  ]
+}

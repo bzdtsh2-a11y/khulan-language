@@ -1,0 +1,14 @@
+{
+  "generatedAt": "2026-07-30T06:41:57.820Z",
+  "existingRows": 6427,
+  "existingUniqueWords": 4571,
+  "parsedRows": 3326,
+  "parsedBySource": {
+    "fgh.pdf": 664,
+    "Солонгос үг.pdf": 2662
+  },
+  "duplicatesAgainstExisting": 850,
+  "duplicatesBetweenPdfs": 114,
+  "additions": 2362,
+  "finalUniqueWords": 6933
+}

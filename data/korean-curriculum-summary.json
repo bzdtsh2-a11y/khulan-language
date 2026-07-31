@@ -1,0 +1,65 @@
+{
+  "generatedAt": "2026-06-28T06:32:19.186Z",
+  "sources": [
+    {
+      "level": 2,
+      "kind": "textbook",
+      "file": "e-book 몽골어판 2단계.pdf",
+      "pages": 524
+    },
+    {
+      "level": 3,
+      "kind": "workbook",
+      "file": "+·¦±++++ +º¦- -+¦+ ¦-¦¦+e 3¦¦ +¦¦-+d(+÷+¬¦-).pdf",
+      "pages": 186
+    },
+    {
+      "level": 3,
+      "kind": "textbook",
+      "file": "+·¦±++++ +º¦- -+¦+ ¦-¦¦+e 3¦¦ +¦¦-+d.pdf",
+      "pages": 338
+    },
+    {
+      "level": 4,
+      "kind": "workbook",
+      "file": "+·¦±++++ +º¦- -+¦+ ¦-¦¦+e 4¦¦ +¦¦-+d(+÷+¬¦-).pdf",
+      "pages": 194
+    },
+    {
+      "level": 4,
+      "kind": "textbook",
+      "file": "+·¦±++++ +º¦- -+¦+ ¦-¦¦+e 4¦¦ +¦¦-+d.pdf",
+      "pages": 338
+    },
+    {
+      "level": 5,
+      "kind": "workbook",
+      "file": "+·¦±++++ +º¦- -+¦+ ¦-¦¦+e 5¦¦ +¦¦-+d(+÷+¬¦-).pdf",
+      "pages": 206
+    },
+    {
+      "level": 5,
+      "kind": "textbook",
+      "file": "+·¦±++++ +º¦- -+¦+ ¦-¦¦+e 5¦¦ +¦¦-+d.pdf",
+      "pages": 354
+    },
+    {
+      "level": 6,
+      "kind": "workbook",
+      "file": "몽골인을 위한 종합 한국어 6권 이북용(워크북) (1).pdf",
+      "pages": 230
+    },
+    {
+      "level": 6,
+      "kind": "textbook",
+      "file": "몽골인을 위한 종합 한국어 6권 이북용.pdf",
+      "pages": 366
+    }
+  ],
+  "counts": {
+    "lessons": 75,
+    "vocabulary": 1600,
+    "grammar": 185,
+    "exercises": 370
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "package_id": "TOPIK_CH02_MN_WEB_20260731_V1",
+  "file_count": 14,
+  "files": [
+    {
+      "name": "CODEX_IMPORT_PROMPT_MN.md",
+      "size_bytes": 594,
+      "sha256": "b23d9ca59292cad0d3eb2de02a38c2a5b1213b4e7f1ce750de3c4521530c8b6b"
+    },
+    {
+      "name": "CONTENT_AUDIT_MN.md",
+      "size_bytes": 1573,
+      "sha256": "20e4d56d27f375ad3fe28d317a995dc49156e1eb9b18037b2b5e59043ab6afe3"
+    },
+    {
+      "name": "DELTA_SUMMARY_MN.md",
+      "size_bytes": 931,
+      "sha256": "07bc4e89490bc04610fbc13d1bf658145d4ab621213830ad5da70b2349ce153c"
+    },
+    {
+      "name": "INTEGRITY_CHECK.json",
+      "size_bytes": 546,
+      "sha256": "32f9a1b5ae5be0fa689064230fca203a7f3ff1c138d281e96185a35d73e5803e"
+    },
+    {
+      "name": "PACKAGE_ID.txt",
+      "size_bytes": 30,
+      "sha256": "fb168258d9fdb3fb3bf9af49023c6783162246df64ff96aa95f200c2228005b1"
+    },
+    {
+      "name": "PRESERVATION_REPORT.json",
+      "size_bytes": 475,
+      "sha256": "c390e81beadae3c0337c22b7f6a5a22fba829b2ac44091546283290006196db0"
+    },
+    {
+      "name": "README_MN.md",
+      "size_bytes": 1258,
+      "sha256": "c61a9e52d9ae56db4ebd2769869ef65af73598dd8fddd7381ae5791f24f609b0"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "size_bytes": 1037,
+      "sha256": "b76de5e9cf216b827e953028053017630d5bc0fa439057e7f51a1fd594d7e056"
+    },
+    {
+      "name": "VERIFY_BEFORE_IMPORT.py",
+      "size_bytes": 1892,
+      "sha256": "a09b647dc1c413a6f061832d094660300b44829df754aea214ba4d391af839b9"
+    },
+    {
+      "name": "manifest.json",
+      "size_bytes": 1845,
+      "sha256": "60e51f5744a0aa8d4a55d34e43c9c31774bb2ce91888d9d105ae78d6f4bb22b3"
+    },
+    {
+      "name": "topik_ch02_mn_web.json",
+      "size_bytes": 72365,
+      "sha256": "be1d0849c448d44f769389e2064de7784f932716bc913040e3fe65c43ab0efcd"
+    },
+    {
+      "name": "topik_ch02_mn_web.ts",
+      "size_bytes": 72438,
+      "sha256": "ca7846f85ae907f060a12eba761d08876087e6b3dd1fb8112d67cca774795202"
+    },
+    {
+      "name": "topik_ch02_schema.json",
+      "size_bytes": 741,
+      "sha256": "762bf8321959762f864fb70da1919cc63d271ac4414662070a51c9c5feea1f2f"
+    },
+    {
+      "name": "topik_ch02_seed.json",
+      "size_bytes": 75037,
+      "sha256": "0bae1d7a0a94bd4065c4ef73d0fa97930c13537b1540f314969b6e77c616e029"
+    }
+  ]
+}

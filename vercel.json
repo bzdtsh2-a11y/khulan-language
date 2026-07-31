@@ -1,0 +1,75 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/topik.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "data/topik_ch01_mn_web.json",
+          "data/topik_ch01_schema.json",
+          "lib/topik-content.js",
+          "data/topik_ch02_mn_web.json",
+          "data/topik_ch02_schema.json",
+          "data/topik_ch02_seed.json",
+          "lib/topik-ch02-content.js"
+        ]
+      }
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/topik",
+      "dest": "/api/topik.js"
+    },
+    {
+      "src": "/",
+      "dest": "/public/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(index.html)?",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate, no-cache"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/(app.js|topik.js|topik-ch02.js|styles.css|topik-ch02.css|service-worker.js|manifest.webmanifest)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate, no-cache"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/api/topik",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-store"
+        }
+      ]
+    }
+  ]
+}

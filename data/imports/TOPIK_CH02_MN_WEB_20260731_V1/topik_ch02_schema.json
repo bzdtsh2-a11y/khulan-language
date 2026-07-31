@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TOPIK Chapter 2 Mongolian Web Package Schema",
+  "type": "object",
+  "required": [
+    "package_id",
+    "schema_version",
+    "title_ko",
+    "title_mn",
+    "stats",
+    "source_pages"
+  ],
+  "properties": {
+    "package_id": {
+      "type": "string"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "title_ko": {
+      "type": "string"
+    },
+    "title_mn": {
+      "type": "string"
+    },
+    "stats": {
+      "type": "object"
+    },
+    "source_pages": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "supplementary_ch1": {
+      "type": "object"
+    },
+    "chapter2": {
+      "type": "object"
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "topik-ch01-mn.schema.json",
+  "title": "TOPIK II Mongolian learning content",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "content_id",
+    "title_ko",
+    "title_mn",
+    "sections",
+    "vocabulary_index",
+    "counts"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "content_id": {
+      "type": "string"
+    },
+    "title_ko": {
+      "type": "string"
+    },
+    "title_mn": {
+      "type": "string"
+    },
+    "target_exam": {
+      "const": "TOPIK II"
+    },
+    "source_files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "book_page",
+          "image_file"
+        ],
+        "properties": {
+          "book_page": {
+            "type": "integer"
+          },
+          "image_file": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "preservation_policy": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "const": "append_only"
+        },
+        "removed_items": {
+          "const": 0
+        }
+      }
+    },
+    "sections": {
+      "type": "object",
+      "required": [
+        "correct_grammar",
+        "similar_grammar",
+        "advertisements",
+        "listening_correct_picture",
+        "listening_continuation"
+      ]
+    },
+    "vocabulary_index": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "ko",
+          "mn",
+          "pos"
+        ]
+      }
+    },
+    "counts": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

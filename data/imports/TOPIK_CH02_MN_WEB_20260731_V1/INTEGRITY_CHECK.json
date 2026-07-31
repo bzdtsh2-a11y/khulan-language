@@ -1,0 +1,23 @@
+{
+  "package_id": "TOPIK_CH02_MN_WEB_20260731_V1",
+  "real_file_count": 14,
+  "expected_file_count": 14,
+  "file_names": [
+    "CODEX_IMPORT_PROMPT_MN.md",
+    "CONTENT_AUDIT_MN.md",
+    "DELTA_SUMMARY_MN.md",
+    "INTEGRITY_CHECK.json",
+    "PACKAGE_ID.txt",
+    "PRESERVATION_REPORT.json",
+    "README_MN.md",
+    "SHA256SUMS.txt",
+    "VERIFY_BEFORE_IMPORT.py",
+    "manifest.json",
+    "topik_ch02_mn_web.json",
+    "topik_ch02_mn_web.ts",
+    "topik_ch02_schema.json",
+    "topik_ch02_seed.json"
+  ],
+  "passes_real_file_count_check": true,
+  "generated_at": "2026-07-31T07:29:07.035149Z"
+}
