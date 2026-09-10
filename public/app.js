@@ -329,7 +329,7 @@ function openCourseLesson(id) {
   if (id === hangulFoundationLesson.id) {
     $("#lessonLevel").textContent = "Анхан шат • Суурь хичээл";
     $("#lessonTitle").textContent = "한글 — Хангылын эхний алхам";
-    $("#lessonBody").innerHTML = `<iframe class="hangul-foundation-frame" src="/lessons/hangul-foundation.html" title="Хангылын эхний алхам интерактив хичээл"></iframe>`;
+    $("#lessonBody").innerHTML = `<iframe class="hangul-foundation-frame" src="/lessons/hangul-foundation.html?v=17" title="Хангылын эхний алхам интерактив хичээл"></iframe>`;
     $("#lessonDialog").classList.add("foundation-lesson-dialog");
     $("#lessonDialog").showModal();
     return;
@@ -809,8 +809,8 @@ $("#addWordForm").addEventListener("submit", (event) => {
 configureLanguageNavigation(); render(); runPetals(); iconRefresh();
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   window.addEventListener("load", async () => {
-    const release = "khulan-language-v14";
-    const registration = await navigator.serviceWorker.register("/service-worker.js?v=14", { updateViaCache:"none" });
+    const release = "khulan-language-v17";
+    const registration = await navigator.serviceWorker.register("/service-worker.js?v=17", { updateViaCache:"none" });
     await registration.update();
     if (registration.waiting) registration.waiting.postMessage({ type:"SKIP_WAITING" });
     navigator.serviceWorker.addEventListener("controllerchange", () => {
