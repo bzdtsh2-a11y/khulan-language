@@ -42,6 +42,16 @@ const koreanStageConfig = [
   { label:"Дунд", stage:"Дунд шат", icon:"layers-3", description:"3–4-р түвшний хэрэглээний хичээл" },
   { label:"Гүнзгий", stage:"Гүнзгий шат", icon:"award", description:"5–6-р түвшний ахисан хичээл" },
 ];
+const hangulFoundationLesson = {
+  id: "ko-hangul-foundation",
+  level: 1,
+  stage: "Анхан шат",
+  number: 0,
+  title: "한글",
+  translation: "Хангылын эхний алхам",
+  topic: "Үсэг, зурлага, үе бүтээх, дэвсгэр үсэг, анхны үг ба өгүүлбэр",
+  isFoundation: true
+};
 const topikSectionConfig = [
   { id:"connective", label:"Холбох нөхцөлийн дүрэм", icon:"git-merge", tab:"correct", mode:"connective" },
   { id:"sentence", label:"Өгүүлбэр төгсгөх дүрэм", icon:"text-cursor-input", tab:"correct", mode:"sentence" },
@@ -182,7 +192,7 @@ function renderToday() {
 }
 
 function renderKoreanHome() {
-  const lessonTotal = koreanMaster.lessons.length + koreanCurriculum.lessons.length;
+  const lessonTotal = koreanMaster.lessons.length + koreanCurriculum.lessons.length + 1;
   const grammarTotal = koreanMaster.grammar.length + koreanCurriculum.grammar.length + koreanExplained.grammar.length;
   const exerciseTotal = koreanMaster.exercises.length + koreanCurriculum.exercises.length;
   main.innerHTML = pageHead("KHULAN LANGUAGE · 한국어", "Солонгос хэлний сургалт", "Өөрийн түвшнээ сонгоод дүрэм, шинэ үг, шалгалт, дасгал ажлаа логик дарааллаар судлаарай.") + `
@@ -194,7 +204,7 @@ function renderKoreanHome() {
     </section>
     <section class="korean-path-grid">
       ${koreanStageConfig.map((item, index) => {
-        const lessons = koreanMaster.lessons.filter((row) => row.stage === item.stage).length + koreanCurriculum.lessons.filter((row) => row.stage === item.stage).length;
+        const lessons = koreanMaster.lessons.filter((row) => row.stage === item.stage).length + koreanCurriculum.lessons.filter((row) => row.stage === item.stage).length + (item.stage === "Анхан шат" ? 1 : 0);
         const words = koreanWords.filter((row) => row.stage === item.stage).length;
         const grammar = koreanExplained.grammar.filter((row) => row.stage === item.stage).length;
         const exercises = koreanMaster.exercises.filter((row) => row.stage === item.stage).length + koreanCurriculum.exercises.filter((row) => row.stage === item.stage).length;
@@ -217,17 +227,18 @@ function renderKoreanHome() {
 
 function renderKoreanStage() {
   const stage = state.koreanStage || "Анхан шат";
-  const lessons = koreanMaster.lessons.filter((row) => row.stage === stage).length + koreanCurriculum.lessons.filter((row) => row.stage === stage).length;
+  const lessons = koreanMaster.lessons.filter((row) => row.stage === stage).length + koreanCurriculum.lessons.filter((row) => row.stage === stage).length + (stage === "Анхан шат" ? 1 : 0);
   const words = koreanWords.filter((row) => row.stage === stage).length;
   const grammar = koreanExplained.grammar.filter((row) => row.stage === stage).length;
   const exercises = koreanMaster.exercises.filter((row) => row.stage === stage).length + koreanCurriculum.exercises.filter((row) => row.stage === stage).length;
   const sections = [
+    ["course","graduation-cap","Хичээлүүд",lessons,"Суурь хичээлээс эхлэн дарааллаар судлах"],
     ["grammar","book-open","Дүрэм",grammar,"Тайлбар, бүтэц, жишээтэй дүрмийн хичээл"],
     ["vocabulary","languages","Шинэ үг",words,"Солонгос–Монгол утга, дуудлагын дасгал"],
     ["exam","clipboard-check","Шалгалт",10,"Тухайн шатны үг ба дүрмийн 10 асуулт"],
     ["exercise","pencil-line","Дасгал ажил",exercises,"Ном, ажлын дэвтрийн бичих ба ярих ажил"],
   ];
-  main.innerHTML = pageHead("СОЛОНГОС ХЭЛ · СУРАЛЦАХ ШАТ", stage, `${lessons} хичээлийн агуулгыг Дүрэм → Шинэ үг → Шалгалт → Дасгал ажил гэсэн дарааллаар судална.`, `<button class="secondary" data-view="korean-home"><i data-lucide="arrow-left"></i> Бүх шат</button>`) + `
+  main.innerHTML = pageHead("СОЛОНГОС ХЭЛ · СУРАЛЦАХ ШАТ", stage, `${lessons} хичээлийн агуулгыг Хичээл → Дүрэм → Шинэ үг → Шалгалт → Дасгал ажил гэсэн дарааллаар судална.`, `<button class="secondary" data-view="korean-home"><i data-lucide="arrow-left"></i> Бүх шат</button>`) + `
     <ol class="korean-section-grid">
       ${sections.map(([id,icon,title,count,description], index) => `<li><button type="button" data-korean-section="${id}"><span class="section-order">${index + 1}</span><i data-lucide="${icon}"></i><div><h2>${title}</h2><p>${description}</p><strong>${Number(count).toLocaleString()} ${id === "exam" ? "асуулт" : "агуулга"}</strong></div><i data-lucide="chevron-right"></i></button></li>`).join("")}
     </ol>`;
@@ -235,6 +246,7 @@ function renderKoreanStage() {
   main.querySelectorAll("[data-korean-section]").forEach((button) => button.addEventListener("click", () => {
     const section = button.dataset.koreanSection;
     state.koreanStageContext = stage;
+    state.courseStage = stage;
     state.exerciseStage = stage;
     state.practiceTab = section === "exercise" ? "course" : state.practiceTab;
     state.exam = null;
@@ -285,7 +297,7 @@ function renderCourseLibrary() {
   const selectedStage = state.courseStage || "Бүгд";
   const isKorean = state.language === "korean";
   const englishLessons = (baseGrammarRows.english || []).map((row,index) => ({level:row[1],stage:row[1],number:index+1,title:row[2],description:row[3],source:"Англи хэлний хөтөлбөр"}));
-  const allLessons = isKorean ? koreanMaster.lessons : englishLessons;
+  const allLessons = isKorean ? [hangulFoundationLesson, ...koreanMaster.lessons] : englishLessons;
   const lessons = isKorean ? allLessons.filter((item) => selectedStage === "Бүгд" || item.stage === selectedStage) : allLessons;
   const counts = isKorean ? {
     lessons:allLessons.length,
@@ -306,7 +318,7 @@ function renderCourseLibrary() {
       <article><strong>${counts.exercises}</strong><small>дасгал ажил</small></article>
     </section>
     ${isKorean ? `<div class="stage-tabs">${["Бүгд","Анхан шат","Дунд шат","Гүнзгий шат"].map((stage) => `<button class="${stage === selectedStage ? "active" : ""}" data-course-stage="${stage}">${stage}</button>`).join("")}</div>` : ""}
-    <section class="course-grid">${lessons.map((lesson) => `<button class="course-card" type="button" ${isKorean ? `data-open-course="${lesson.id}"` : `data-english-lesson="${lesson.number-1}"`}><span class="course-number">${lesson.level}.${String(lesson.number).padStart(2,"0")}</span><h3>${escapeHtml(lesson.title)}</h3><p>${escapeHtml(lesson.translation || lesson.description || lesson.topic || "")}</p><footer><span>${escapeHtml(lesson.stage)}</span><span>Хичээлээ нээх →</span></footer></button>`).join("") || `<div class="empty-state">Энэ түвшний хичээл олдсонгүй.</div>`}</section>`;
+    <section class="course-grid">${lessons.map((lesson) => `<button class="course-card${lesson.isFoundation ? " foundation-course-card" : ""}" type="button" ${isKorean ? `data-open-course="${lesson.id}"` : `data-english-lesson="${lesson.number-1}"`}><span class="course-number">${lesson.isFoundation ? "ЭХЛЭЛ" : `${lesson.level}.${String(lesson.number).padStart(2,"0")}`}</span><h3>${escapeHtml(lesson.title)}</h3><p>${escapeHtml(lesson.translation || lesson.description || lesson.topic || "")}</p><footer><span>${escapeHtml(lesson.stage)}</span><span>Хичээлээ нээх →</span></footer></button>`).join("") || `<div class="empty-state">Энэ түвшний хичээл олдсонгүй.</div>`}</section>`;
   main.querySelectorAll("[data-course-stage]").forEach((button) => button.addEventListener("click", () => { state.courseStage=button.dataset.courseStage;renderCourseLibrary(); }));
   main.querySelectorAll("[data-open-course]").forEach((button) => button.addEventListener("click", () => openCourseLesson(button.dataset.openCourse)));
   main.querySelectorAll("[data-english-lesson]").forEach((button) => button.addEventListener("click", () => openLesson(grammarRows.english[Number(button.dataset.englishLesson)]?.[0])));
@@ -314,6 +326,15 @@ function renderCourseLibrary() {
 }
 
 function openCourseLesson(id) {
+  if (id === hangulFoundationLesson.id) {
+    $("#lessonLevel").textContent = "Анхан шат • Суурь хичээл";
+    $("#lessonTitle").textContent = "한글 — Хангылын эхний алхам";
+    $("#lessonBody").innerHTML = `<iframe class="hangul-foundation-frame" src="/lessons/hangul-foundation.html" title="Хангылын эхний алхам интерактив хичээл"></iframe>`;
+    $("#lessonDialog").classList.add("foundation-lesson-dialog");
+    $("#lessonDialog").showModal();
+    return;
+  }
+  $("#lessonDialog").classList.remove("foundation-lesson-dialog");
   const lesson=koreanMaster.lessons.find((item)=>item.id===id);if(!lesson)return;
   const words=koreanMaster.vocabulary.filter((item)=>item.bookLevel===lesson.bookLevel&&item.lesson===lesson.number);
   const grammars=koreanExplained.grammar.filter((item)=>item.bookLevel===lesson.bookLevel&&item.lesson===lesson.number);
