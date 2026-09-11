@@ -400,3 +400,4 @@ dialog input, dialog select, dialog textarea { width: 100%; border: 1px solid va
 @media (max-width:720px) {
   .sidebar nav:has([data-korean-stage]) { grid-template-columns:repeat(5,minmax(90px,1fr)); min-width:500px; }
 }
+.topbar-account{display:flex;align-items:center;gap:8px}.account-logout{min-height:38px;border:1px solid var(--line);border-radius:9px;padding:0 12px;background:#fff;color:var(--muted);font-size:10px;font-weight:900;cursor:pointer}.account-logout:hover{border-color:#d88aa4;color:var(--rose)}@media(max-width:650px){.account-logout{padding:0 9px;font-size:9px}}

@@ -807,6 +807,18 @@ $("#addWordForm").addEventListener("submit", (event) => {
 });
 
 configureLanguageNavigation(); render(); runPetals(); iconRefresh();
+document.querySelector("#logoutAccount")?.addEventListener("click", async () => {
+  try { await fetch("/api/auth?action=logout", { method:"POST", headers:{ "Content-Type":"application/json" }, body:"{}" }); } finally { location.replace("/auth/"); }
+});
+async function verifyPaidAccess() {
+  try {
+    const response = await fetch("/api/auth?action=me", { cache:"no-store" });
+    const account = await response.json();
+    if (!account.allowed) location.replace("/auth/");
+  } catch { location.replace("/auth/"); }
+}
+setInterval(verifyPaidAccess, 60_000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) verifyPaidAccess(); });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   window.addEventListener("load", async () => {
     const release = "khulan-language-v17";

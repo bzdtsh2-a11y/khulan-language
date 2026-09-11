@@ -1,3 +1,4 @@
+import { getAuthContext } from "../lib/auth-store.js";
 import {
   getChapter2Overview,
   getChapter2Section,
@@ -66,6 +67,8 @@ export default async function handler(request, response) {
   const action = url.searchParams.get("action") || "overview";
 
   try {
+    const auth = await getAuthContext(request);
+    if (!auth.allowed) return json(response, 401, { error: "ACCESS_NOT_APPROVED" });
     if (request.method === "GET" && action === "overview") {
       return json(response, 200, getOverview(), "private, max-age=60");
     }

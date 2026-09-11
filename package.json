@@ -10,6 +10,7 @@
     "validate:topik": "node --test tests/topik-content.test.mjs"
   },
   "dependencies": {
+    "@upstash/redis": "1.35.6",
     "pdfjs-dist": "^5.4.624"
   }
 }
