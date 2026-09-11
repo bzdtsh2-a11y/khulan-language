@@ -1,10 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import crypto from "node:crypto";
 import authHandler from "../api/auth.js";
 import adminHandler from "../api/admin.js";
 import gatewayHandler from "../api/gateway.js";
 import topikHandler from "../api/topik.js";
-import { getUserById, hashPassword, resetMemoryStore, saveUser } from "../lib/auth-store.js";
+import { getStore, getUserById, hashPassword, resetMemoryStore, saveUser } from "../lib/auth-store.js";
 
 class MockResponse {
   constructor() { this.headers = {}; this.statusCode = 200; this.body = ""; }
@@ -148,6 +149,66 @@ test("admin username is reserved and cannot fall back to a user account", async 
   });
   assert.equal(reservedRegistration.statusCode, 409, reservedRegistration.body);
   assert.equal(reservedRegistration.json().error, "USERNAME_RESERVED");
+});
+
+test("legacy v4 users remain visible, can sign in, and promote safely on updates", async () => {
+  resetMemoryStore();
+  process.env.KHULAN_ADMIN_USERNAME = "admin";
+  process.env.KHULAN_ADMIN_PASSWORD_HASH = await hashPassword("Admin-Strong-2026!");
+  const salt = "0123456789abcdef0123456789abcdef";
+  const passwordHash = `${salt}:${crypto.pbkdf2Sync("Legacy-Strong-2026!", salt, 210000, 32, "sha256").toString("hex")}`;
+  const userId = "legacy-user-1";
+  await getStore().set("khulan:auth:v4:state", JSON.stringify({
+    users: [{
+      id: userId,
+      role: "user",
+      name: "Хуучин Хэрэглэгч",
+      phone: "99118877",
+      username: "legacy01",
+      password: passwordHash,
+      status: "active",
+      createdAt: Date.now() - 40 * 24 * 60 * 60 * 1000,
+      sessionVersion: 3,
+      paymentSubmittedAt: Date.now() - 35 * 24 * 60 * 60 * 1000,
+      accessUntil: Date.now() + 10 * 24 * 60 * 60 * 1000,
+    }],
+    resets: [],
+  }));
+
+  const login = await call(authHandler, "POST", "/api/auth?action=login", {
+    username: "legacy01",
+    password: "Legacy-Strong-2026!",
+  });
+  assert.equal(login.statusCode, 200, login.body);
+  assert.equal(login.json().role, "user");
+  assert.equal(login.json().allowed, true);
+  const userCookie = cookieFrom(login);
+  const content = await call(gatewayHandler, "GET", "/api/gateway?path=index.html", undefined, userCookie);
+  assert.equal(content.statusCode, 200);
+
+  const duplicate = await call(authHandler, "POST", "/api/auth?action=register", {
+    name: "Давхардсан Хэрэглэгч",
+    phone: "99110000",
+    username: "legacy01",
+    password: "Different-Strong-2026!",
+  });
+  assert.equal(duplicate.statusCode, 409, duplicate.body);
+
+  const adminLogin = await call(authHandler, "POST", "/api/auth?action=login", {
+    username: "admin",
+    password: "Admin-Strong-2026!",
+  });
+  const adminCookie = cookieFrom(adminLogin);
+  const list = await call(adminHandler, "GET", "/api/admin", undefined, adminCookie);
+  assert.equal(list.statusCode, 200, list.body);
+  assert.equal(list.json().users.length, 1);
+  assert.equal(list.json().users[0].username, "legacy01");
+
+  const revoked = await call(adminHandler, "POST", "/api/admin", { action: "revoke", userId }, adminCookie);
+  assert.equal(revoked.statusCode, 200, revoked.body);
+  assert.equal(revoked.json().user.status, "revoked");
+  const denied = await call(authHandler, "GET", "/api/auth?action=me", undefined, userCookie);
+  assert.equal(denied.json().authenticated, false);
 });
 
 test("unpaid confirmation can be rejected and never grants access", async () => {
