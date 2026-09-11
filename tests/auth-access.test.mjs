@@ -108,6 +108,48 @@ test("registration → payment → admin approval gates all content", async () =
   assert.equal(revokedRoot.statusCode, 302);
 });
 
+test("admin username is reserved and cannot fall back to a user account", async () => {
+  resetMemoryStore();
+  process.env.KHULAN_ADMIN_USERNAME = "owner";
+  process.env.KHULAN_ADMIN_PASSWORD_HASH = await hashPassword("Owner-Strong-2026!");
+
+  const legacyRegistration = await call(authHandler, "POST", "/api/auth?action=register", {
+    name: "Хуучин Хэрэглэгч",
+    phone: "99114455",
+    username: "admin",
+    password: "User-Strong-2026!",
+  });
+  assert.equal(legacyRegistration.statusCode, 201, legacyRegistration.body);
+
+  process.env.KHULAN_ADMIN_USERNAME = "admin";
+  process.env.KHULAN_ADMIN_PASSWORD_HASH = await hashPassword("Admin-Strong-2026!");
+
+  const userPasswordLogin = await call(authHandler, "POST", "/api/auth?action=login", {
+    username: "admin",
+    password: "User-Strong-2026!",
+  });
+  assert.equal(userPasswordLogin.statusCode, 401, userPasswordLogin.body);
+
+  const adminLogin = await call(authHandler, "POST", "/api/auth?action=login", {
+    username: "admin",
+    password: "Admin-Strong-2026!",
+  });
+  assert.equal(adminLogin.statusCode, 200, adminLogin.body);
+  assert.equal(adminLogin.json().role, "admin");
+  assert.equal(adminLogin.json().allowed, true);
+  assert.equal(adminLogin.json().user, undefined);
+
+  resetMemoryStore();
+  const reservedRegistration = await call(authHandler, "POST", "/api/auth?action=register", {
+    name: "Шинэ Хэрэглэгч",
+    phone: "99115566",
+    username: "admin",
+    password: "Another-Strong-2026!",
+  });
+  assert.equal(reservedRegistration.statusCode, 409, reservedRegistration.body);
+  assert.equal(reservedRegistration.json().error, "USERNAME_RESERVED");
+});
+
 test("unpaid confirmation can be rejected and never grants access", async () => {
   resetMemoryStore();
   process.env.KHULAN_ADMIN_USERNAME = "admin";

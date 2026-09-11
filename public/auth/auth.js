@@ -3,7 +3,7 @@
 
   const app = document.querySelector("#authApp");
   const toastBox = document.querySelector("#authToast");
-  let tab = new URL(location.href).searchParams.get("admin") === "1" ? "admin" : "login";
+  let tab = "login";
   let current = null;
   let resetState = null;
   let pollTimer = null;
@@ -56,7 +56,6 @@
     return `<nav class="auth-tabs">
       <button data-tab="login" class="${tab === "login" ? "active" : ""}">Нэвтрэх</button>
       <button data-tab="register" class="${tab === "register" ? "active" : ""}">Бүртгүүлэх</button>
-      <button data-tab="admin" class="${tab === "admin" ? "active" : ""}">Админ</button>
     </nav>`;
   }
 
@@ -78,12 +77,12 @@
     box.textContent = message;
   }
 
-  function loginForm(admin) {
+  function loginForm() {
     return `<form id="loginForm">
-      <label>${admin ? "Админы нэр" : "Нэвтрэх нэр"}<input name="username" autocomplete="username" required maxlength="40"></label>
+      <label>Нэвтрэх нэр<input name="username" autocomplete="username" required maxlength="40"></label>
       <label>Нууц үг<input name="password" type="password" autocomplete="current-password" required maxlength="128"></label>
-      ${admin ? "" : '<button class="link-button" id="forgotPassword" type="button">Нууц үгээ мартсан уу?</button>'}
-      <button class="primary" type="submit">${admin ? "Админ хэсэгт нэвтрэх" : "Нэвтрэх"}</button>
+      <button class="link-button" id="forgotPassword" type="button">Нууц үгээ мартсан уу?</button>
+      <button class="primary" type="submit">Нэвтрэх</button>
     </form>`;
   }
 
@@ -112,13 +111,12 @@
     clearInterval(pollTimer);
     app.classList.remove("wide");
     const isRegister = tab === "register";
-    const isAdmin = tab === "admin";
     const isForgot = tab === "forgot";
     app.innerHTML = `${tabs()}
-      <span class="eyebrow">${isRegister ? "ШИНЭ ХЭРЭГЛЭГЧ" : isAdmin ? "УДИРДЛАГЫН ХЭСЭГ" : isForgot ? "НУУЦ ҮГ СЭРГЭЭХ" : "ГИШҮҮНИЙ НЭВТРЭЛТ"}</span>
-      <h1>${isRegister ? "Бүртгэл үүсгэх" : isAdmin ? "Админ нэвтрэх" : isForgot ? "Нууц үгээ сэргээх" : "Тавтай морил"}</h1>
-      <p class="intro">${isRegister ? "Бүртгүүлсний дараа сарын төлбөрийн мэдээлэл гарна. Админ төлбөрийг шалгаж зөвшөөрсний дараа хичээлүүд нээгдэнэ." : isAdmin ? "Төлбөр болон нууц үг сэргээх хүсэлтүүдийг шалгаж шийдвэрлэнэ." : isForgot ? "Таны бүртгэлтэй утсыг админ шалгасны дараа шинэ нууц үг тохируулах эрх нээгдэнэ." : "Зөвшөөрөгдсөн хэрэглэгч үндсэн сургалтын веб рүү нэвтэрнэ."}</p>
-      ${isRegister ? registerForm() : isForgot ? recoveryForm() : loginForm(isAdmin)}`;
+      <span class="eyebrow">${isRegister ? "ШИНЭ ХЭРЭГЛЭГЧ" : isForgot ? "НУУЦ ҮГ СЭРГЭЭХ" : "ГИШҮҮНИЙ НЭВТРЭЛТ"}</span>
+      <h1>${isRegister ? "Бүртгэл үүсгэх" : isForgot ? "Нууц үгээ сэргээх" : "Тавтай морил"}</h1>
+      <p class="intro">${isRegister ? "Бүртгүүлсний дараа сарын төлбөрийн мэдээлэл гарна. Админ төлбөрийг шалгаж зөвшөөрсний дараа хичээлүүд нээгдэнэ." : isForgot ? "Таны бүртгэлтэй утсыг админ шалгасны дараа шинэ нууц үг тохируулах эрх нээгдэнэ." : "Зөвшөөрөгдсөн хэрэглэгч үндсэн сургалтын веб рүү нэвтэрнэ."}</p>
+      ${isRegister ? registerForm() : isForgot ? recoveryForm() : loginForm()}`;
     bindTabs();
     bindPublicForms();
   }
@@ -373,7 +371,7 @@
     } catch (error) {
       if (error.code === "ADMIN_REQUIRED") {
         current = null;
-        tab = "admin";
+        tab = "login";
         renderPublic();
       } else {
         toast(error.message);
