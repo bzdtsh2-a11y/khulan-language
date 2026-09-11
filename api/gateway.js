@@ -67,7 +67,10 @@ export default async function handler(request, response) {
     response.setHeader("Content-Type", mime[extension] || "application/octet-stream");
     response.setHeader("Cache-Control", "private, no-store");
     response.setHeader("X-Content-Type-Options", "nosniff");
-    response.setHeader("X-Frame-Options", "DENY");
+    // Interactive lessons are rendered in same-origin iframes by the main app.
+    // Keep cross-origin embedding blocked while allowing that lesson flow.
+    response.setHeader("Content-Security-Policy", "frame-ancestors 'self'");
+    response.setHeader("X-Frame-Options", "SAMEORIGIN");
     response.setHeader("Referrer-Policy", "same-origin");
     response.setHeader("Cross-Origin-Resource-Policy", "same-origin");
     response.end(request.method === "HEAD" ? undefined : body);
