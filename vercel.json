@@ -31,6 +31,10 @@
       "dest": "/public/index.html"
     },
     {
+      "src": "/auth/?",
+      "dest": "/public/index.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/public/$1"
     }
