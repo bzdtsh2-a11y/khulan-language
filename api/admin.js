@@ -3,6 +3,7 @@ import {
   approvePasswordReset,
   approveUser,
   assertSameOrigin,
+  extendCurrentEligibleUsersOneYear,
   getAuthContext,
   listPasswordResetRequests,
   listUsers,
@@ -46,6 +47,10 @@ export default async function handler(request, response) {
     if (body.action === "reject-reset") {
       const resetRequest = await rejectPasswordReset(String(body.resetRequestId || ""), auth.adminUsername);
       return sendJson(response, 200, { ok: true, resetRequest });
+    }
+    if (body.action === "extend-current-users-one-year") {
+      const result = await extendCurrentEligibleUsersOneYear(auth.adminUsername);
+      return sendJson(response, 200, { ok: true, result });
     }
 
     const id = String(body.userId || "");

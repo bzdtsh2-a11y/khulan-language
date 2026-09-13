@@ -211,6 +211,55 @@ test("legacy v4 users remain visible, can sign in, and promote safely on updates
   assert.equal(denied.json().authenticated, false);
 });
 
+test("one-year extension changes only active and expired users and is idempotent", async () => {
+  resetMemoryStore();
+  process.env.KHULAN_ADMIN_USERNAME = "admin";
+  process.env.KHULAN_ADMIN_PASSWORD_HASH = await hashPassword("Admin-Strong-2026!");
+  const now = Date.now();
+  const records = [
+    { id:"active-year", username:"active-year", status:"active", accessUntil:new Date(now + 20 * 86400000).toISOString() },
+    { id:"expired-year", username:"expired-year", status:"active", accessUntil:new Date(now - 20 * 86400000).toISOString() },
+    { id:"waiting-year", username:"waiting-year", status:"payment_submitted", accessUntil:null },
+    { id:"unpaid-year", username:"unpaid-year", status:"payment_rejected", accessUntil:null },
+  ];
+  for (const record of records) {
+    await saveUser({
+      ...record,
+      role:"user",
+      name:record.username,
+      phone:"99110022",
+      passwordHash:await hashPassword("User-Strong-2026!"),
+      authVersion:0,
+      createdAt:new Date(now - 30 * 86400000).toISOString(),
+    });
+  }
+  const adminLogin = await call(authHandler, "POST", "/api/auth?action=login", { username:"admin", password:"Admin-Strong-2026!" });
+  const adminCookie = cookieFrom(adminLogin);
+  const first = await call(adminHandler, "POST", "/api/admin", { action:"extend-current-users-one-year" }, adminCookie);
+  assert.equal(first.statusCode, 200, first.body);
+  assert.deepEqual(first.json().result, {
+    appliedAt:first.json().result.appliedAt,
+    extendedCount:2,
+    activeCount:1,
+    expiredCount:1,
+    alreadyApplied:false,
+  });
+  const active = await getUserById("active-year");
+  const expired = await getUserById("expired-year");
+  const waiting = await getUserById("waiting-year");
+  const unpaid = await getUserById("unpaid-year");
+  assert.ok(Date.parse(active.accessUntil) > now + 380 * 86400000);
+  assert.ok(Date.parse(expired.accessUntil) > now + 364 * 86400000);
+  assert.equal(waiting.status, "payment_submitted");
+  assert.equal(waiting.accessUntil, null);
+  assert.equal(unpaid.status, "payment_rejected");
+  assert.equal(unpaid.accessUntil, null);
+
+  const second = await call(adminHandler, "POST", "/api/admin", { action:"extend-current-users-one-year" }, adminCookie);
+  assert.equal(second.json().result.alreadyApplied, true);
+  assert.equal((await getUserById("active-year")).accessUntil, active.accessUntil);
+});
+
 test("unpaid confirmation can be rejected and never grants access", async () => {
   resetMemoryStore();
   process.env.KHULAN_ADMIN_USERNAME = "admin";
