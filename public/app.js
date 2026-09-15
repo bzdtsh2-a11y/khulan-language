@@ -74,6 +74,10 @@ const topikExamSets = [{
     { title:"Зөв хариу ба онооны хүснэгт", detail:"Сонсгол, бичиг, уншлагын хариу ба оноо · 3 хуудас · PDF", icon:"list-checks", href:"/downloads/topik-102/topik-102-answers-scores.pdf", size:"1.6 MB" },
   ],
 }];
+const topik102Audio = Array.from({length:51}, (_, index) => {
+  const number=String(index).padStart(2,"0");
+  return { number, title:`Сонсгол ${number}`, href:`/downloads/topik-102/audio/2-${number}.mp3` };
+});
 
 const escapeHtml = (value = "") => String(value).replace(/[&<>'"]/g, (char) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", "'":"&#39;", '"':"&quot;" }[char]));
 const languageName = () => state.language === "english" ? "Англи хэл" : "Солонгос хэл";
@@ -520,7 +524,7 @@ function renderCourseExercises() {
 function renderStudyContent(word) {
   const host = $("#studyContent");
   if (state.studyMode === "flash") {
-    host.innerHTML = `<article class="flashcard"><div class="flashcard-content"><div class="memory-visual">${word.visual || "✨"}</div><span class="eyebrow">${escapeHtml(word.language === "korean" ? (word.level || word.stage || "Солонгос хэл") : (word.source || word.level || "Англи хэл"))}</span><h1>${escapeHtml(word.word)}</h1><div class="pronunciation">${escapeHtml(word.pronunciation || word.soundHint || "")}</div><button class="secondary" id="speakWord"><i data-lucide="volume-2"></i> Дуудлага сонсох</button><div id="revealed" hidden><div class="translation">${escapeHtml(word.translation)}</div><div class="memory-box"><strong>Ой тогтоолтын холбоос</strong><br>${escapeHtml(word.memory || `${word.word} үгийг утгатай нь тод дүрслэн төсөөл.`)}</div><div class="example-box"><strong>${escapeHtml(word.example || "Жишээ өгүүлбэр нэмээгүй")}</strong></div></div><div class="flash-actions" id="flashActions"><button class="primary" id="revealWord"><i data-lucide="eye"></i> Утгыг харах</button></div></div></article>`;
+    host.innerHTML = `<article class="flashcard"><div class="flashcard-content"><div class="memory-visual">${word.visual || "✨"}</div><span class="eyebrow">${escapeHtml(word.language === "korean" ? (word.level || word.stage || "Солонгос хэл") : (word.source || word.level || "Англи хэл"))}</span><h1>${escapeHtml(word.word)}</h1>${word.preserveEntry?`<div class="legal-meaning"><small>МОНГОЛ УТГА</small><strong>${escapeHtml(word.translation)}</strong></div>`:""}<div class="pronunciation">${escapeHtml(word.pronunciation || word.soundHint || "")}</div><button class="secondary" id="speakWord"><i data-lucide="volume-2"></i> Дуудлага сонсох</button><div id="revealed" hidden><div class="translation">${escapeHtml(word.translation)}</div><div class="memory-box"><strong>Ой тогтоолтын холбоос</strong><br>${escapeHtml(word.memory || (word.preserveEntry ? `“${word.word}” — ${word.translation}` : `${word.word} үгийг утгатай нь тод дүрслэн төсөөл.`))}</div><div class="example-box"><strong>${escapeHtml(word.example || (word.preserveEntry ? `${word.word} — ${word.translation}` : "Жишээ өгүүлбэр нэмээгүй"))}</strong></div></div><div class="flash-actions" id="flashActions"><button class="primary" id="revealWord"><i data-lucide="eye"></i> Утгыг харах</button></div></div></article>`;
     $("#speakWord").addEventListener("click", () => speak(word));
     $("#revealWord").addEventListener("click", () => { $("#revealed").hidden = false; $("#flashActions").innerHTML = `<button class="secondary" id="reviewWord"><i data-lucide="rotate-ccw"></i> Дахин давтана</button><button class="primary" id="knowWord"><i data-lucide="check"></i> Мэдэж байна</button>`; $("#reviewWord").addEventListener("click", () => markWord("review")); $("#knowWord").addEventListener("click", () => markWord("learned")); iconRefresh(); });
   } else if (state.studyMode === "choice") {
@@ -727,12 +731,45 @@ async function setupResearchReader() {
   $("#saveInk").addEventListener("click",()=>{if(!state.documentId)return toast("Эхлээд PDF сонгоно уу.");localStorage.setItem(`khulan-ink-${state.documentId}`,JSON.stringify(strokes));toast("Тэмдэглэл энэ төхөөрөмжид хадгалагдлаа.");});
 }
 
+const topikReader = { pdf:null, href:"", page:1, strokes:[], drawing:false, active:null, pen:false, renderTask:null };
+const topikInkKey = () => `khulan-topik-ink:${topikReader.href}:${topikReader.page}`;
+function saveTopikInk(silent=true) {
+  if(!topikReader.href)return;
+  localStorage.setItem(topikInkKey(),JSON.stringify(topikReader.strokes));
+  if(!silent)toast("Энэ хуудасны тэмдэглэл төхөөрөмжид хадгалагдлаа.");
+}
+function drawTopikInk() {
+  const canvas=$("#topikInkCanvas"),ctx=canvas.getContext("2d");ctx.clearRect(0,0,canvas.width,canvas.height);ctx.lineCap="round";ctx.lineJoin="round";
+  for(const stroke of topikReader.strokes){ctx.strokeStyle=stroke.color;ctx.lineWidth=stroke.size*(canvas.width/900);ctx.globalAlpha=stroke.size>=9?.3:1;ctx.beginPath();stroke.points.forEach((point,index)=>index?ctx.lineTo(point.x*canvas.width,point.y*canvas.height):ctx.moveTo(point.x*canvas.width,point.y*canvas.height));ctx.stroke();}ctx.globalAlpha=1;
+}
+async function renderTopikPdfPage() {
+  if(!topikReader.pdf)return;const page=await topikReader.pdf.getPage(topikReader.page),stage=$("#topikReaderStage"),canvas=$("#topikPdfCanvas"),ink=$("#topikInkCanvas");
+  const initial=page.getViewport({scale:1}),scale=Math.min(2,Math.max(.5,(stage.clientWidth-20)/initial.width)),viewport=page.getViewport({scale});
+  canvas.width=viewport.width;canvas.height=viewport.height;ink.width=viewport.width;ink.height=viewport.height;canvas.style.width=ink.style.width=`${viewport.width}px`;canvas.style.height=ink.style.height=`${viewport.height}px`;
+  topikReader.strokes=JSON.parse(localStorage.getItem(topikInkKey())||"[]");
+  if(topikReader.renderTask)try{topikReader.renderTask.cancel();}catch{}
+  topikReader.renderTask=page.render({canvasContext:canvas.getContext("2d"),viewport});await topikReader.renderTask.promise;topikReader.renderTask=null;drawTopikInk();
+  $("#topikPageStatus").textContent=`${topikReader.page} / ${topikReader.pdf.numPages}`;$("#topikPrevPage").disabled=topikReader.page===1;$("#topikNextPage").disabled=topikReader.page===topikReader.pdf.numPages;$("#topikReaderLoading").hidden=true;
+}
+async function openTopikPdf(href,title) {
+  const dialog=$("#topikReaderDialog");$("#topikReaderTitle").textContent=title;$("#topikReaderLoading").hidden=false;dialog.showModal();
+  const pdfjs=await import("/vendor/pdf.min.mjs");pdfjs.GlobalWorkerOptions.workerSrc="/vendor/pdf.worker.min.mjs";topikReader.href=href;topikReader.page=1;topikReader.pen=false;$("#topikInkCanvas").style.pointerEvents="none";$("#topikPenToggle").classList.remove("primary");topikReader.pdf=await pdfjs.getDocument(href).promise;await renderTopikPdfPage();iconRefresh();
+}
+async function changeTopikPage(delta){if(!topikReader.pdf)return;saveTopikInk();topikReader.page=Math.min(topikReader.pdf.numPages,Math.max(1,topikReader.page+delta));$("#topikReaderLoading").hidden=false;await renderTopikPdfPage();}
+
 function renderTopikExams() {
   main.innerHTML = pageHead("TOPIK II · ДАСГАЛЫН САН", "TOPIK дасгал ажлууд", "Өмнөх шалгалтын асуулт, хариу болон сонсголын материалыг татаж аваад бэлтгэл хийнэ.") + `
     <section class="topik-download-list">${topikExamSets.map((exam) => `<article class="topik-download-set">
       <header><span class="exam-number">${exam.number}</span><div><span class="eyebrow">TOPIK II</span><h2>${escapeHtml(exam.title)}</h2><p>${escapeHtml(exam.description)}</p></div></header>
-      <div class="topik-download-grid">${exam.files.map((file) => `<article class="topik-download-card"><span class="download-icon"><i data-lucide="${file.icon}"></i></span><div><h3>${escapeHtml(file.title)}</h3><p>${escapeHtml(file.detail)}</p><small>${escapeHtml(file.size)}</small></div><a class="primary" href="${file.href}" download><i data-lucide="download"></i> Татаж авах</a></article>`).join("")}</div>
+      <div class="topik-download-grid">${exam.files.map((file) => `<article class="topik-download-card"><span class="download-icon"><i data-lucide="${file.icon}"></i></span><div><h3>${escapeHtml(file.title)}</h3><p>${escapeHtml(file.detail)}</p><small>${escapeHtml(file.size)}</small></div><div class="topik-file-actions"><button class="secondary" type="button" data-open-topik-pdf="${file.href}" data-pdf-title="${escapeHtml(file.title)}"><i data-lucide="file-pen-line"></i> Нээж бичих</button><a class="primary" href="${file.href}" download><i data-lucide="download"></i> Татах</a></div></article>`).join("")}</div>
+      <section class="topik-audio-library"><header><div><span class="eyebrow">СОНСГОЛЫН ФАЙЛ</span><h2>102-р TOPIK II · 51 аудио</h2></div><select id="topikAudioSelect">${topik102Audio.map((track)=>`<option value="${track.href}">${track.title}</option>`).join("")}</select></header><audio id="topikAudioPlayer" controls preload="metadata" src="${topik102Audio[0].href}"></audio><div class="audio-track-buttons">${topik102Audio.map((track)=>`<button type="button" data-topik-audio="${track.href}">${track.number}</button>`).join("")}</div></section>
     </article>`).join("")}</section>`;
+  main.querySelectorAll("[data-open-topik-pdf]").forEach((button)=>button.addEventListener("click",()=>openTopikPdf(button.dataset.openTopikPdf,button.dataset.pdfTitle)));
+  const audio=$("#topikAudioPlayer"),select=$("#topikAudioSelect");
+  const chooseAudio=(href,play=false)=>{audio.src=href;select.value=href;main.querySelectorAll("[data-topik-audio]").forEach((button)=>button.classList.toggle("active",button.dataset.topikAudio===href));if(play)audio.play();};
+  select.addEventListener("change",()=>chooseAudio(select.value,true));
+  main.querySelectorAll("[data-topik-audio]").forEach((button)=>button.addEventListener("click",()=>chooseAudio(button.dataset.topikAudio,true)));
+  chooseAudio(topik102Audio[0].href);
   iconRefresh();
 }
 
@@ -821,6 +858,14 @@ $("#languageSwitch").addEventListener("click", (event) => {
 });
 document.querySelectorAll(".brand").forEach((brand) => brand.addEventListener("click", (event) => { event.preventDefault(); setView(state.language === "korean" ? "korean-home" : "today"); }));
 document.querySelectorAll(".dialog-close").forEach((button) => button.addEventListener("click", () => button.closest("dialog").close()));
+$("#closeTopikReader").addEventListener("click",()=>{saveTopikInk();$("#topikReaderDialog").close();});
+$("#topikPrevPage").addEventListener("click",()=>changeTopikPage(-1));$("#topikNextPage").addEventListener("click",()=>changeTopikPage(1));
+$("#topikPenToggle").addEventListener("click",()=>{topikReader.pen=!topikReader.pen;$("#topikInkCanvas").style.pointerEvents=topikReader.pen?"auto":"none";$("#topikPenToggle").classList.toggle("primary",topikReader.pen);toast(topikReader.pen?"Үзгээр бичих горим асаалаа.":"Хуудас удирдах горимд шилжлээ.");});
+$("#topikUndoInk").addEventListener("click",()=>{topikReader.strokes.pop();drawTopikInk();saveTopikInk();});
+$("#topikClearInk").addEventListener("click",()=>{topikReader.strokes=[];drawTopikInk();saveTopikInk();});$("#topikSaveInk").addEventListener("click",()=>saveTopikInk(false));
+$("#topikInkCanvas").addEventListener("pointerdown",(event)=>{if(!topikReader.pen)return;const canvas=event.currentTarget,rect=canvas.getBoundingClientRect();topikReader.drawing=true;canvas.setPointerCapture(event.pointerId);topikReader.active={color:$("#topikPenColor").value,size:Number($("#topikPenSize").value),points:[{x:(event.clientX-rect.left)/rect.width,y:(event.clientY-rect.top)/rect.height}]};topikReader.strokes.push(topikReader.active);});
+$("#topikInkCanvas").addEventListener("pointermove",(event)=>{if(!topikReader.drawing||!topikReader.active)return;const rect=event.currentTarget.getBoundingClientRect();topikReader.active.points.push({x:(event.clientX-rect.left)/rect.width,y:(event.clientY-rect.top)/rect.height});drawTopikInk();});
+const finishTopikStroke=()=>{if(topikReader.drawing)saveTopikInk();topikReader.drawing=false;topikReader.active=null;};$("#topikInkCanvas").addEventListener("pointerup",finishTopikStroke);$("#topikInkCanvas").addEventListener("pointercancel",finishTopikStroke);
 $("#openAddWord").addEventListener("click", () => $("#addWordDialog").showModal());
 $("#addWordForm").addEventListener("submit", (event) => {
   event.preventDefault(); const data = Object.fromEntries(new FormData(event.currentTarget));
@@ -843,8 +888,8 @@ setInterval(verifyPaidAccess, 60_000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) verifyPaidAccess(); });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   window.addEventListener("load", async () => {
-    const release = "khulan-language-v19";
-    const registration = await navigator.serviceWorker.register("/service-worker.js?v=19", { updateViaCache:"none" });
+    const release = "khulan-language-v20";
+    const registration = await navigator.serviceWorker.register("/service-worker.js?v=20", { updateViaCache:"none" });
     await registration.update();
     if (registration.waiting) registration.waiting.postMessage({ type:"SKIP_WAITING" });
     navigator.serviceWorker.addEventListener("controllerchange", () => {

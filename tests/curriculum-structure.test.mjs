@@ -33,6 +33,13 @@ test("TOPIK exercise downloads replace research navigation", () => {
     assert.ok(app.includes(file), `missing TOPIK download ${file}`);
     assert.ok(fs.existsSync(new URL(`public/downloads/topik-102/${file}`, root)), `missing PDF ${file}`);
   }
+  assert.match(app, /Array\.from\(\{length:51\}/);
+  assert.match(app, /openTopikPdf/);
+  assert.match(index, /topikReaderDialog/);
+  for (let index = 0; index <= 50; index += 1) {
+    const file = `2-${String(index).padStart(2, "0")}.mp3`;
+    assert.ok(fs.existsSync(new URL(`public/downloads/topik-102/audio/${file}`, root)), `missing audio ${file}`);
+  }
 });
 
 test("Korean curriculum exposes the required stages and four sections", () => {

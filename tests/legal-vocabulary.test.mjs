@@ -32,4 +32,6 @@ test("the app loads legal data and preserves repeated legal meanings", () => {
   assert.match(app, /window\.KOREAN_LEGAL_VOCABULARY/);
   assert.match(app, /word\.preserveEntry/);
   assert.match(index, /korean-legal-vocabulary\.js\?v=1/);
+  assert.match(app, /class="legal-meaning"/);
+  assert.match(app, /word\.preserveEntry \? `“\$\{word\.word\}” — \$\{word\.translation\}`/);
 });

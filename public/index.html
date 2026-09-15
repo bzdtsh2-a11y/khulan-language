@@ -10,11 +10,11 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Хулан">
   <title>Хулан · Гадаад хэлний ухаалаг туслах</title>
-  <meta name="khulan-release" content="16">
+  <meta name="khulan-release" content="17">
   <link rel="manifest" href="manifest.webmanifest?v=14">
   <link rel="apple-touch-icon" href="app-icon-192.png">
   <link rel="icon" type="image/png" sizes="192x192" href="app-icon-192.png">
-  <link rel="stylesheet" href="styles.css?v=10">
+  <link rel="stylesheet" href="styles.css?v=11">
   <link rel="stylesheet" href="topik.css?v=2">
   <link rel="stylesheet" href="topik-ch02.css?v=1">
 </head>
@@ -96,6 +96,13 @@
       <p class="video-note">Видео Хулан апп дотор тоглоно. YouTube-ийн зарим контент эзэмшигчийн тохиргооноос шалтгаалан embed тоглуулахыг хориглосон байж болно.</p>
     </article>
   </dialog>
+  <dialog id="topikReaderDialog" class="topik-reader-dialog">
+    <article>
+      <header class="dialog-header"><div><span class="eyebrow">TOPIK PDF УНШИГЧ</span><h2 id="topikReaderTitle"></h2></div><button class="icon-button light" id="closeTopikReader" type="button" aria-label="Хаах"><i data-lucide="x"></i></button></header>
+      <div class="topik-reader-toolbar"><button class="secondary" id="topikPrevPage"><i data-lucide="chevron-left"></i> Өмнөх</button><strong id="topikPageStatus">1 / 1</strong><button class="secondary" id="topikNextPage">Дараах <i data-lucide="chevron-right"></i></button><span class="spacer"></span><button class="secondary" id="topikPenToggle"><i data-lucide="pen-tool"></i> Бичих</button><input class="color-dot" id="topikPenColor" type="color" value="#c93f69" title="Үзгийн өнгө"><select id="topikPenSize"><option value="2">Нарийн</option><option value="4" selected>Дунд</option><option value="9">Тодруулагч</option></select><button class="secondary" id="topikUndoInk"><i data-lucide="undo-2"></i> Буцаах</button><button class="secondary" id="topikClearInk"><i data-lucide="eraser"></i> Арилгах</button><button class="primary" id="topikSaveInk"><i data-lucide="save"></i> Хадгалах</button></div>
+      <div class="topik-reader-stage" id="topikReaderStage"><canvas id="topikPdfCanvas"></canvas><canvas id="topikInkCanvas"></canvas><div class="reader-loading" id="topikReaderLoading">PDF нээж байна…</div></div>
+    </article>
+  </dialog>
   <script src="vendor/lucide.js"></script>
   <script src="data/pdf-vocabulary.js"></script>
   <script src="data/lessons.js"></script>
@@ -107,6 +114,6 @@
   <script src="topik-utils.js?v=2"></script>
   <script src="topik.js?v=4"></script>
   <script src="topik-ch02.js?v=1"></script>
-  <script src="app.js?v=16"></script>
+  <script src="app.js?v=17"></script>
 </body>
 </html>
