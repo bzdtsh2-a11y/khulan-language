@@ -63,6 +63,17 @@ const topikSectionConfig = [
   { id:"vocabulary", label:"Давхардал арилгасан Солонгос–Монгол үгийн сан", icon:"languages", tab:"vocabulary" },
   { id:"quiz", label:"Зөв хариу, монгол тайлбартай дасгал", icon:"list-checks", tab:"quiz" },
 ];
+const topikExamSets = [{
+  number:102,
+  title:"102-р удаагийн TOPIK II шалгалт",
+  description:"Сонсгол, бичиг, уншлага, сонсголын нэгдсэн материал, зөв хариу болон онооны хүснэгт.",
+  files:[
+    { title:"1-р цаг: Сонсгол ба бичиг", detail:"Асуултын материал · 19 хуудас · PDF", icon:"headphones", href:"/downloads/topik-102/topik-102-listening-writing.pdf", size:"8.2 MB" },
+    { title:"2-р цаг: Уншлага", detail:"Уншлагын асуултын материал · 25 хуудас · PDF", icon:"book-open-text", href:"/downloads/topik-102/topik-102-reading.pdf", size:"13.0 MB" },
+    { title:"Сонсголын нэгдсэн материал", detail:"Сонсголын дагалдах нэгдсэн материал · 26 хуудас · PDF", icon:"audio-lines", href:"/downloads/topik-102/topik-102-listening-integrated.pdf", size:"13.9 MB" },
+    { title:"Зөв хариу ба онооны хүснэгт", detail:"Сонсгол, бичиг, уншлагын хариу ба оноо · 3 хуудас · PDF", icon:"list-checks", href:"/downloads/topik-102/topik-102-answers-scores.pdf", size:"1.6 MB" },
+  ],
+}];
 
 const escapeHtml = (value = "") => String(value).replace(/[&<>'"]/g, (char) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", "'":"&#39;", '"':"&quot;" }[char]));
 const languageName = () => state.language === "english" ? "Англи хэл" : "Солонгос хэл";
@@ -716,6 +727,15 @@ async function setupResearchReader() {
   $("#saveInk").addEventListener("click",()=>{if(!state.documentId)return toast("Эхлээд PDF сонгоно уу.");localStorage.setItem(`khulan-ink-${state.documentId}`,JSON.stringify(strokes));toast("Тэмдэглэл энэ төхөөрөмжид хадгалагдлаа.");});
 }
 
+function renderTopikExams() {
+  main.innerHTML = pageHead("TOPIK II · ДАСГАЛЫН САН", "TOPIK дасгал ажлууд", "Өмнөх шалгалтын асуулт, хариу болон сонсголын материалыг татаж аваад бэлтгэл хийнэ.") + `
+    <section class="topik-download-list">${topikExamSets.map((exam) => `<article class="topik-download-set">
+      <header><span class="exam-number">${exam.number}</span><div><span class="eyebrow">TOPIK II</span><h2>${escapeHtml(exam.title)}</h2><p>${escapeHtml(exam.description)}</p></div></header>
+      <div class="topik-download-grid">${exam.files.map((file) => `<article class="topik-download-card"><span class="download-icon"><i data-lucide="${file.icon}"></i></span><div><h3>${escapeHtml(file.title)}</h3><p>${escapeHtml(file.detail)}</p><small>${escapeHtml(file.size)}</small></div><a class="primary" href="${file.href}" download><i data-lucide="download"></i> Татаж авах</a></article>`).join("")}</div>
+    </article>`).join("")}</section>`;
+  iconRefresh();
+}
+
 function renderWritingExam() {
   const topics = state.language === "korean" ? ["나의 꿈과 미래", "기술이 교육에 미치는 영향", "내가 좋아하는 도시"] : ["The role of technology in education", "A place that changed my perspective", "Should homework be optional?"];
   const topic = state.writingTopic || topics[0]; state.writingTopic=topic;
@@ -783,7 +803,7 @@ function render() {
   else if (state.view === "exam") renderExam();
   else if (state.view === "writing") renderWritingExam();
   else if (state.view === "media") renderMedia();
-  else if (state.view === "research") renderResearch();
+  else if (state.view === "topik-exams") renderTopikExams();
   else renderMyWords();
 }
 
@@ -823,8 +843,8 @@ setInterval(verifyPaidAccess, 60_000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) verifyPaidAccess(); });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   window.addEventListener("load", async () => {
-    const release = "khulan-language-v18";
-    const registration = await navigator.serviceWorker.register("/service-worker.js?v=18", { updateViaCache:"none" });
+    const release = "khulan-language-v19";
+    const registration = await navigator.serviceWorker.register("/service-worker.js?v=19", { updateViaCache:"none" });
     await registration.update();
     if (registration.waiting) registration.waiting.postMessage({ type:"SKIP_WAITING" });
     navigator.serviceWorker.addEventListener("controllerchange", () => {

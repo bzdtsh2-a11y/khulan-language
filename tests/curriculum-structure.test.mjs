@@ -16,13 +16,23 @@ function loadBrowserData(file, globalName) {
 
 test("English navigation and language separation remain present", () => {
   const views = [...index.matchAll(/data-view="([^"]+)"/g)].map((match) => match[1]);
-  for (const view of ["today","grammar","course","vocabulary","practice","exam","writing","media","research","mywords"]) {
+  for (const view of ["today","grammar","course","vocabulary","practice","exam","writing","media","topik-exams","mywords"]) {
     assert.ok(views.includes(view), `missing English view ${view}`);
   }
   assert.ok(!views.includes("topik"), "TOPIK must not appear in English navigation");
   assert.match(index, /data-language="english"/);
   assert.match(index, /data-language="korean"/);
   assert.match(app, /if \(state\.language === "english"\) \{\s+nav\.innerHTML = englishNavMarkup/);
+});
+
+test("TOPIK exercise downloads replace research navigation", () => {
+  assert.doesNotMatch(index, /data-view="research"/);
+  assert.match(index, /data-view="topik-exams"/);
+  assert.match(index, /TOPIK дасгал ажлууд/);
+  for (const file of ["topik-102-listening-writing.pdf", "topik-102-reading.pdf", "topik-102-listening-integrated.pdf", "topik-102-answers-scores.pdf"]) {
+    assert.ok(app.includes(file), `missing TOPIK download ${file}`);
+    assert.ok(fs.existsSync(new URL(`public/downloads/topik-102/${file}`, root)), `missing PDF ${file}`);
+  }
 });
 
 test("Korean curriculum exposes the required stages and four sections", () => {
