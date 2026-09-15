@@ -10,8 +10,10 @@ const koreanMaster = window.KOREAN_MASTER || { lessons:[], vocabulary:[], gramma
 const koreanExplained = window.KOREAN_GRAMMAR_EXPLAINED || { grammar:[] };
 const koreanWordKey = (word = "") => word.normalize("NFKC").replace(/[\s·.,!?()[\]{}'"]/g,"").toLowerCase();
 const koreanWordMap = new Map();
-for (const word of [...koreanMaster.vocabulary, ...koreanCurriculum.vocabulary, ...(window.KOREAN_VOCABULARY || [])]) {
-  const key=koreanWordKey(word.word);if(key&&!koreanWordMap.has(key))koreanWordMap.set(key,word);
+for (const word of [...koreanMaster.vocabulary, ...koreanCurriculum.vocabulary, ...(window.KOREAN_VOCABULARY || []), ...(window.KOREAN_LEGAL_VOCABULARY || [])]) {
+  const baseKey=koreanWordKey(word.word);
+  const key=word.preserveEntry ? `${baseKey}:legal:${word.sourceNumber}` : baseKey;
+  if(key&&!koreanWordMap.has(key))koreanWordMap.set(key,word);
 }
 const koreanWords = [...koreanWordMap.values()];
 const baseGrammarRows = window.GRAMMAR_LESSONS || { english: [], korean: [] };
@@ -821,8 +823,8 @@ setInterval(verifyPaidAccess, 60_000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) verifyPaidAccess(); });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   window.addEventListener("load", async () => {
-    const release = "khulan-language-v17";
-    const registration = await navigator.serviceWorker.register("/service-worker.js?v=17", { updateViaCache:"none" });
+    const release = "khulan-language-v18";
+    const registration = await navigator.serviceWorker.register("/service-worker.js?v=18", { updateViaCache:"none" });
     await registration.update();
     if (registration.waiting) registration.waiting.postMessage({ type:"SKIP_WAITING" });
     navigator.serviceWorker.addEventListener("controllerchange", () => {

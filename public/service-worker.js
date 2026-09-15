@@ -1,5 +1,5 @@
-const cacheName = "khulan-language-v17";
-const coreFiles = ["/","/index.html","/styles.css?v=9","/topik.css?v=2","/topik-ch02.css?v=1","/topik-utils.js?v=2","/topik.js?v=4","/topik-ch02.js?v=1","/app.js?v=14","/lessons/hangul-foundation.html?v=17","/lessons/hangul-review-source.html?v=17","/data/lessons.js","/data/korean-pdf-additions.js?v=1","/data/korean-curriculum.js?v=4","/data/korean-master.js?v=6","/data/korean-grammar-explained.js?v=7","/manifest.webmanifest","/vendor/lucide.js","/app-icon-192.png","/app-icon-512.png"];
+const cacheName = "khulan-language-v18";
+const coreFiles = ["/","/index.html","/styles.css?v=9","/topik.css?v=2","/topik-ch02.css?v=1","/topik-utils.js?v=2","/topik.js?v=4","/topik-ch02.js?v=1","/app.js?v=15","/lessons/hangul-foundation.html?v=17","/lessons/hangul-review-source.html?v=17","/data/lessons.js","/data/korean-pdf-additions.js?v=1","/data/korean-curriculum.js?v=4","/data/korean-master.js?v=6","/data/korean-legal-vocabulary.js?v=1","/data/korean-grammar-explained.js?v=7","/manifest.webmanifest","/vendor/lucide.js","/app-icon-192.png","/app-icon-512.png"];
 self.addEventListener("install", (event) => { event.waitUntil(caches.open(cacheName).then((cache) => cache.addAll(coreFiles))); self.skipWaiting(); });
 self.addEventListener("activate", (event) => { event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== cacheName).map((key) => caches.delete(key)))).then(() => self.clients.claim())); });
 self.addEventListener("message", (event) => {
