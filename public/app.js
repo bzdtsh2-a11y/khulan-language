@@ -65,8 +65,21 @@ const topikSectionConfig = [
 ];
 const topikExamSets = [{
   number:102,
+  category:"TOPIK I",
+  title:"102-р удаагийн TOPIK I түвшин тогтоох шалгалт",
+  description:"Анхан түвшний сонсгол, уншлага, сонсголын нэгдсэн материал, зөв хариу болон онооны хүснэгт.",
+  audio:{count:31,prefix:"1",base:"/downloads/topik-102-i/audio"},
+  files:[
+    { title:"Сонсгол ба уншлага", detail:"Түвшин тогтоох шалгалтын материал · 29 хуудас · PDF", icon:"book-open-text", href:"/downloads/topik-102-i/topik-102-i-listening-reading.pdf", size:"9.9 MB" },
+    { title:"Сонсголын нэгдсэн материал", detail:"Сонсголын дагалдах нэгдсэн материал · 12 хуудас · PDF", icon:"audio-lines", href:"/downloads/topik-102-i/topik-102-i-listening-integrated.pdf", size:"5.6 MB" },
+    { title:"Зөв хариу ба онооны хүснэгт", detail:"Сонсгол, уншлагын хариу ба оноо · 2 хуудас · PDF", icon:"list-checks", href:"/downloads/topik-102-i/topik-102-i-answers-scores.pdf", size:"0.6 MB" },
+  ],
+},{
+  number:102,
+  category:"TOPIK II",
   title:"102-р удаагийн TOPIK II шалгалт",
   description:"Сонсгол, бичиг, уншлага, сонсголын нэгдсэн материал, зөв хариу болон онооны хүснэгт.",
+  audio:{count:51,prefix:"2",base:"/downloads/topik-102/audio"},
   files:[
     { title:"1-р цаг: Сонсгол ба бичиг", detail:"Асуултын материал · 19 хуудас · PDF", icon:"headphones", href:"/downloads/topik-102/topik-102-listening-writing.pdf", size:"8.2 MB" },
     { title:"2-р цаг: Уншлага", detail:"Уншлагын асуултын материал · 25 хуудас · PDF", icon:"book-open-text", href:"/downloads/topik-102/topik-102-reading.pdf", size:"13.0 MB" },
@@ -74,9 +87,9 @@ const topikExamSets = [{
     { title:"Зөв хариу ба онооны хүснэгт", detail:"Сонсгол, бичиг, уншлагын хариу ба оноо · 3 хуудас · PDF", icon:"list-checks", href:"/downloads/topik-102/topik-102-answers-scores.pdf", size:"1.6 MB" },
   ],
 }];
-const topik102Audio = Array.from({length:51}, (_, index) => {
+const topikAudioTracks = (exam) => Array.from({length:exam.audio.count}, (_, index) => {
   const number=String(index).padStart(2,"0");
-  return { number, title:`Сонсгол ${number}`, href:`/downloads/topik-102/audio/2-${number}.mp3` };
+  return { number, title:`Сонсгол ${number}`, href:`${exam.audio.base}/${exam.audio.prefix}-${number}.mp3` };
 });
 
 const escapeHtml = (value = "") => String(value).replace(/[&<>'"]/g, (char) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", "'":"&#39;", '"':"&quot;" }[char]));
@@ -758,18 +771,14 @@ async function openTopikPdf(href,title) {
 async function changeTopikPage(delta){if(!topikReader.pdf)return;saveTopikInk();topikReader.page=Math.min(topikReader.pdf.numPages,Math.max(1,topikReader.page+delta));$("#topikReaderLoading").hidden=false;await renderTopikPdfPage();}
 
 function renderTopikExams() {
-  main.innerHTML = pageHead("TOPIK II · ДАСГАЛЫН САН", "TOPIK дасгал ажлууд", "Өмнөх шалгалтын асуулт, хариу болон сонсголын материалыг татаж аваад бэлтгэл хийнэ.") + `
-    <section class="topik-download-list">${topikExamSets.map((exam) => `<article class="topik-download-set">
-      <header><span class="exam-number">${exam.number}</span><div><span class="eyebrow">TOPIK II</span><h2>${escapeHtml(exam.title)}</h2><p>${escapeHtml(exam.description)}</p></div></header>
+  main.innerHTML = pageHead("TOPIK · ДАСГАЛЫН САН", "TOPIK дасгал ажлууд", "TOPIK I болон TOPIK II шалгалтын материалыг тус тусад нь нээж, сонсож, тэмдэглэж бэлтгэл хийнэ.") + `
+    <section class="topik-download-list">${topikExamSets.map((exam) => {const tracks=topikAudioTracks(exam);return `<article class="topik-download-set" data-audio-set="${exam.category}">
+      <header><span class="exam-number">${exam.number}</span><div><span class="eyebrow">${exam.category}</span><h2>${escapeHtml(exam.title)}</h2><p>${escapeHtml(exam.description)}</p></div></header>
       <div class="topik-download-grid">${exam.files.map((file) => `<article class="topik-download-card"><span class="download-icon"><i data-lucide="${file.icon}"></i></span><div><h3>${escapeHtml(file.title)}</h3><p>${escapeHtml(file.detail)}</p><small>${escapeHtml(file.size)}</small></div><div class="topik-file-actions"><button class="secondary" type="button" data-open-topik-pdf="${file.href}" data-pdf-title="${escapeHtml(file.title)}"><i data-lucide="file-pen-line"></i> Нээж бичих</button><a class="primary" href="${file.href}" download><i data-lucide="download"></i> Татах</a></div></article>`).join("")}</div>
-      <section class="topik-audio-library"><header><div><span class="eyebrow">СОНСГОЛЫН ФАЙЛ</span><h2>102-р TOPIK II · 51 аудио</h2></div><select id="topikAudioSelect">${topik102Audio.map((track)=>`<option value="${track.href}">${track.title}</option>`).join("")}</select></header><audio id="topikAudioPlayer" controls preload="metadata" src="${topik102Audio[0].href}"></audio><div class="audio-track-buttons">${topik102Audio.map((track)=>`<button type="button" data-topik-audio="${track.href}">${track.number}</button>`).join("")}</div></section>
-    </article>`).join("")}</section>`;
+      <section class="topik-audio-library"><header><div><span class="eyebrow">СОНСГОЛЫН ФАЙЛ</span><h2>102-р ${exam.category} · ${tracks.length} аудио</h2></div><select data-topik-audio-select>${tracks.map((track)=>`<option value="${track.href}">${track.title}</option>`).join("")}</select></header><audio data-topik-audio-player controls preload="metadata" src="${tracks[0].href}"></audio><div class="audio-track-buttons">${tracks.map((track)=>`<button type="button" data-topik-audio="${track.href}">${track.number}</button>`).join("")}</div></section>
+    </article>`}).join("")}</section>`;
   main.querySelectorAll("[data-open-topik-pdf]").forEach((button)=>button.addEventListener("click",()=>openTopikPdf(button.dataset.openTopikPdf,button.dataset.pdfTitle)));
-  const audio=$("#topikAudioPlayer"),select=$("#topikAudioSelect");
-  const chooseAudio=(href,play=false)=>{audio.src=href;select.value=href;main.querySelectorAll("[data-topik-audio]").forEach((button)=>button.classList.toggle("active",button.dataset.topikAudio===href));if(play)audio.play();};
-  select.addEventListener("change",()=>chooseAudio(select.value,true));
-  main.querySelectorAll("[data-topik-audio]").forEach((button)=>button.addEventListener("click",()=>chooseAudio(button.dataset.topikAudio,true)));
-  chooseAudio(topik102Audio[0].href);
+  main.querySelectorAll("[data-audio-set]").forEach((set)=>{const audio=set.querySelector("[data-topik-audio-player]"),select=set.querySelector("[data-topik-audio-select]");const chooseAudio=(href,play=false)=>{audio.src=href;select.value=href;set.querySelectorAll("[data-topik-audio]").forEach((button)=>button.classList.toggle("active",button.dataset.topikAudio===href));if(play)audio.play();};select.addEventListener("change",()=>chooseAudio(select.value,true));set.querySelectorAll("[data-topik-audio]").forEach((button)=>button.addEventListener("click",()=>chooseAudio(button.dataset.topikAudio,true)));chooseAudio(select.value);});
   iconRefresh();
 }
 
@@ -888,8 +897,8 @@ setInterval(verifyPaidAccess, 60_000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) verifyPaidAccess(); });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   window.addEventListener("load", async () => {
-    const release = "khulan-language-v20";
-    const registration = await navigator.serviceWorker.register("/service-worker.js?v=20", { updateViaCache:"none" });
+    const release = "khulan-language-v21";
+    const registration = await navigator.serviceWorker.register("/service-worker.js?v=21", { updateViaCache:"none" });
     await registration.update();
     if (registration.waiting) registration.waiting.postMessage({ type:"SKIP_WAITING" });
     navigator.serviceWorker.addEventListener("controllerchange", () => {

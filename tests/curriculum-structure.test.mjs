@@ -33,12 +33,23 @@ test("TOPIK exercise downloads replace research navigation", () => {
     assert.ok(app.includes(file), `missing TOPIK download ${file}`);
     assert.ok(fs.existsSync(new URL(`public/downloads/topik-102/${file}`, root)), `missing PDF ${file}`);
   }
-  assert.match(app, /Array\.from\(\{length:51\}/);
+  assert.match(app, /category:"TOPIK I"/);
+  assert.match(app, /category:"TOPIK II"/);
+  assert.match(app, /audio:\{count:31,prefix:"1"/);
+  assert.match(app, /audio:\{count:51,prefix:"2"/);
   assert.match(app, /openTopikPdf/);
   assert.match(index, /topikReaderDialog/);
   for (let index = 0; index <= 50; index += 1) {
     const file = `2-${String(index).padStart(2, "0")}.mp3`;
     assert.ok(fs.existsSync(new URL(`public/downloads/topik-102/audio/${file}`, root)), `missing audio ${file}`);
+  }
+  for (const file of ["topik-102-i-listening-reading.pdf", "topik-102-i-listening-integrated.pdf", "topik-102-i-answers-scores.pdf"]) {
+    assert.ok(app.includes(file), `missing TOPIK I download ${file}`);
+    assert.ok(fs.existsSync(new URL(`public/downloads/topik-102-i/${file}`, root)), `missing TOPIK I PDF ${file}`);
+  }
+  for (let index = 0; index <= 30; index += 1) {
+    const file = `1-${String(index).padStart(2, "0")}.mp3`;
+    assert.ok(fs.existsSync(new URL(`public/downloads/topik-102-i/audio/${file}`, root)), `missing TOPIK I audio ${file}`);
   }
 });
 
