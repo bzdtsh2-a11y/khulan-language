@@ -157,7 +157,9 @@ function configureLanguageNavigation() {
   nav.innerHTML = `
     <button type="button" data-view="korean-home"><i data-lucide="home"></i><span>Солонгос</span></button>
     ${koreanStageConfig.map((item) => `<button type="button" data-korean-stage="${item.stage}"><i data-lucide="${item.icon}"></i><span>${item.label}</span></button>`).join("")}
-    <button type="button" data-view="korean-topik"><i data-lucide="badge-check"></i><span>TOPIK</span></button>`;
+    <button type="button" data-view="korean-topik"><i data-lucide="badge-check"></i><span>TOPIK</span></button>
+    <button type="button" data-view="media"><i data-lucide="play-square"></i><span>Видео, дуу</span></button>
+    <button type="button" data-view="topik-exams"><i data-lucide="files"></i><span>TOPIK дасгал ажлууд</span></button>`;
   nav.querySelectorAll("button").forEach((button) => {
     const active = button.dataset.view === state.view || (button.dataset.koreanStage && button.dataset.koreanStage === state.koreanStage);
     button.classList.toggle("active", active);
@@ -897,8 +899,8 @@ setInterval(verifyPaidAccess, 60_000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) verifyPaidAccess(); });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   window.addEventListener("load", async () => {
-    const release = "khulan-language-v22";
-    const registration = await navigator.serviceWorker.register("/service-worker.js?v=22", { updateViaCache:"none" });
+    const release = "khulan-language-v23";
+    const registration = await navigator.serviceWorker.register("/service-worker.js?v=23", { updateViaCache:"none" });
     await registration.update();
     if (registration.waiting) registration.waiting.postMessage({ type:"SKIP_WAITING" });
     navigator.serviceWorker.addEventListener("controllerchange", () => {
