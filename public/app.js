@@ -247,9 +247,9 @@ function renderKoreanHome() {
         </button>`;
       }).join("")}
       <button class="korean-path-card topik-path-card" type="button" data-view="korean-topik">
-        <span class="path-step">04</span><i data-lucide="badge-check"></i><h2>TOPIK</h2><p>3, 4, 5, 6-р түвшний шалгалтын бэлтгэл</p>
+        <span class="path-step">04</span><i data-lucide="badge-check"></i><h2>TOPIK хичээлүүд</h2><p>TOPIK 3, 4, 5, 6-р түвшний хичээлүүд</p>
         <dl><div><dt>Түвшин</dt><dd>4</dd></div><div><dt>Үгийн сан</dt><dd>588</dd></div><div><dt>Дасгал</dt><dd>68</dd></div><div><dt>Бүлэг</dt><dd>7</dd></div></dl>
-        <span class="path-link">TOPIK нээх <i data-lucide="arrow-right"></i></span>
+        <span class="path-link">Хичээлүүдийг нээх <i data-lucide="arrow-right"></i></span>
       </button>
     </section>`;
   main.querySelectorAll("[data-korean-stage]").forEach((button) => button.addEventListener("click", () => openKoreanStage(button.dataset.koreanStage)));
@@ -288,9 +288,9 @@ function renderKoreanStage() {
 }
 
 function renderTopikLevels() {
-  main.innerHTML = pageHead("СОЛОНГОС ХЭЛ · TOPIK II", "TOPIK түвшнээ сонгоно уу", "3–6-р түвшин бүр ижил долоон үндсэн хэсэгтэй.", `<button class="secondary" data-view="korean-home"><i data-lucide="arrow-left"></i> Солонгос хэл</button>`) + `
+  main.innerHTML = pageHead("СОЛОНГОС ХЭЛ · TOPIK ХИЧЭЭЛҮҮД", "TOPIK 3, 4, 5, 6-р түвшний хичээлүүд", "Судлах хичээлийнхээ түвшнийг сонгоно уу. Түвшин бүр долоон үндсэн хэсэгтэй.", `<button class="secondary" data-view="korean-home"><i data-lucide="arrow-left"></i> Солонгос хэл</button>`) + `
     <section class="topik-level-grid">
-      ${[3,4,5,6].map((level) => `<button type="button" data-topik-level="${level}"><span>TOPIK II</span><strong>${level}</strong><h2>${level}-р түвшин</h2><p>7 хэсэг · 588 үг · 68 дасгал</p><i data-lucide="arrow-up-right"></i></button>`).join("")}
+      ${[3,4,5,6].map((level) => `<button type="button" data-topik-level="${level}"><span>TOPIK ХИЧЭЭЛ</span><strong>${level}</strong><h2>TOPIK ${level}-р түвшний хичээл</h2><p>7 хэсэг · 588 үг · 68 дасгал</p><i data-lucide="arrow-up-right"></i></button>`).join("")}
     </section>`;
   main.querySelector("[data-view='korean-home']").addEventListener("click", () => setView("korean-home"));
   main.querySelectorAll("[data-topik-level]").forEach((button) => button.addEventListener("click", () => {
@@ -303,7 +303,7 @@ function renderTopikLevels() {
 
 function renderTopikLevel() {
   const level = state.topikLevel || 3;
-  main.innerHTML = pageHead(`TOPIK II · ${level}-Р ТҮВШИН`, `${level}-р түвшний сургалтын бүтэц`, "Хэсгээ сонгоход одоо байгаа TOPIK сангийн холбогдох бүх материалыг нээнэ.", `<button class="secondary" data-view="korean-topik"><i data-lucide="arrow-left"></i> TOPIK түвшин</button>`) + `
+  main.innerHTML = pageHead(`TOPIK · ${level}-Р ТҮВШНИЙ ХИЧЭЭЛ`, `TOPIK ${level}-р түвшний хичээлүүд`, "Хичээлийн хэсгээ сонгоход тухайн түвшний холбогдох бүх материалыг нээнэ.", `<button class="secondary" data-view="korean-topik"><i data-lucide="arrow-left"></i> TOPIK хичээлүүд</button>`) + `
     <section class="topik-section-grid">
       ${topikSectionConfig.map((item, index) => `<button type="button" data-open-topik-section="${item.id}"><span>${String(index + 1).padStart(2,"0")}</span><i data-lucide="${item.icon}"></i><h2>${item.label}</h2><p>Монгол тайлбар, жишээ болон дасгалтай</p><i data-lucide="arrow-right"></i></button>`).join("")}
     </section>
@@ -899,8 +899,8 @@ setInterval(verifyPaidAccess, 60_000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) verifyPaidAccess(); });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   window.addEventListener("load", async () => {
-    const release = "khulan-language-v23";
-    const registration = await navigator.serviceWorker.register("/service-worker.js?v=23", { updateViaCache:"none" });
+    const release = "khulan-language-v24";
+    const registration = await navigator.serviceWorker.register("/service-worker.js?v=24", { updateViaCache:"none" });
     await registration.update();
     if (registration.waiting) registration.waiting.postMessage({ type:"SKIP_WAITING" });
     navigator.serviceWorker.addEventListener("controllerchange", () => {

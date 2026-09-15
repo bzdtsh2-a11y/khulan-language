@@ -66,6 +66,8 @@ test("Korean curriculum exposes the required stages and four sections", () => {
 
 test("TOPIK 3–6 share all required internal sections", () => {
   assert.match(app, /\[3,4,5,6\]/);
+  assert.match(app, /TOPIK 3, 4, 5, 6-р түвшний хичээлүүд/);
+  assert.doesNotMatch(app, /3, 4, 5, 6-р түвшний шалгалтын бэлтгэл/);
   for (const label of [
     "Холбох нөхцөлийн дүрэм",
     "Өгүүлбэр төгсгөх дүрэм",
