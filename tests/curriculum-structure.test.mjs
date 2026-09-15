@@ -38,6 +38,8 @@ test("TOPIK exercise downloads replace research navigation", () => {
   assert.match(app, /audio:\{count:31,prefix:"1"/);
   assert.match(app, /audio:\{count:51,prefix:"2"/);
   assert.match(app, /openTopikPdf/);
+  assert.match(app, /Шалгалтын материал дээр ажиллах/);
+  assert.doesNotMatch(app, /Нээж бичих/);
   assert.match(index, /topikReaderDialog/);
   for (let index = 0; index <= 50; index += 1) {
     const file = `2-${String(index).padStart(2, "0")}.mp3`;

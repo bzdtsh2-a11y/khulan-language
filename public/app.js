@@ -774,7 +774,7 @@ function renderTopikExams() {
   main.innerHTML = pageHead("TOPIK · ДАСГАЛЫН САН", "TOPIK дасгал ажлууд", "TOPIK I болон TOPIK II шалгалтын материалыг тус тусад нь нээж, сонсож, тэмдэглэж бэлтгэл хийнэ.") + `
     <section class="topik-download-list">${topikExamSets.map((exam) => {const tracks=topikAudioTracks(exam);return `<article class="topik-download-set" data-audio-set="${exam.category}">
       <header><span class="exam-number">${exam.number}</span><div><span class="eyebrow">${exam.category}</span><h2>${escapeHtml(exam.title)}</h2><p>${escapeHtml(exam.description)}</p></div></header>
-      <div class="topik-download-grid">${exam.files.map((file) => `<article class="topik-download-card"><span class="download-icon"><i data-lucide="${file.icon}"></i></span><div><h3>${escapeHtml(file.title)}</h3><p>${escapeHtml(file.detail)}</p><small>${escapeHtml(file.size)}</small></div><div class="topik-file-actions"><button class="secondary" type="button" data-open-topik-pdf="${file.href}" data-pdf-title="${escapeHtml(file.title)}"><i data-lucide="file-pen-line"></i> Нээж бичих</button><a class="primary" href="${file.href}" download><i data-lucide="download"></i> Татах</a></div></article>`).join("")}</div>
+      <div class="topik-download-grid">${exam.files.map((file) => `<article class="topik-download-card"><span class="download-icon"><i data-lucide="${file.icon}"></i></span><div><h3>${escapeHtml(file.title)}</h3><p>${escapeHtml(file.detail)}</p><small>${escapeHtml(file.size)}</small></div><div class="topik-file-actions"><button class="secondary" type="button" data-open-topik-pdf="${file.href}" data-pdf-title="${escapeHtml(file.title)}"><i data-lucide="clipboard-pen-line"></i> Шалгалтын материал дээр ажиллах</button><a class="primary" href="${file.href}" download><i data-lucide="download"></i> Татах</a></div></article>`).join("")}</div>
       <section class="topik-audio-library"><header><div><span class="eyebrow">СОНСГОЛЫН ФАЙЛ</span><h2>102-р ${exam.category} · ${tracks.length} аудио</h2></div><select data-topik-audio-select>${tracks.map((track)=>`<option value="${track.href}">${track.title}</option>`).join("")}</select></header><audio data-topik-audio-player controls preload="metadata" src="${tracks[0].href}"></audio><div class="audio-track-buttons">${tracks.map((track)=>`<button type="button" data-topik-audio="${track.href}">${track.number}</button>`).join("")}</div></section>
     </article>`}).join("")}</section>`;
   main.querySelectorAll("[data-open-topik-pdf]").forEach((button)=>button.addEventListener("click",()=>openTopikPdf(button.dataset.openTopikPdf,button.dataset.pdfTitle)));
@@ -897,8 +897,8 @@ setInterval(verifyPaidAccess, 60_000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) verifyPaidAccess(); });
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   window.addEventListener("load", async () => {
-    const release = "khulan-language-v21";
-    const registration = await navigator.serviceWorker.register("/service-worker.js?v=21", { updateViaCache:"none" });
+    const release = "khulan-language-v22";
+    const registration = await navigator.serviceWorker.register("/service-worker.js?v=22", { updateViaCache:"none" });
     await registration.update();
     if (registration.waiting) registration.waiting.postMessage({ type:"SKIP_WAITING" });
     navigator.serviceWorker.addEventListener("controllerchange", () => {
